@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  mongodb:
+    image: mongo:7
+    container_name: hrms_mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: hrms
+    volumes:
+      - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./backend
+    container_name: hrms_api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    environment:
+      MONGO_URL: mongodb://mongodb:27017
+      DATABASE_NAME: hrms
+    command: >
+      sh -c "sleep 5 &&
+             uvicorn app.main:app --host 0.0.0.0 --port 8000"
+
+  frontend:
+    build: ./frontend
+    container_name: hrms_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    environment:
+      VITE_API_URL: http://localhost:8000
+
+volumes:
+  mongo_data:
