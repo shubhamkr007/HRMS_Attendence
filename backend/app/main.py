@@ -12,6 +12,7 @@ app = FastAPI(title="HRMS Lite", version="1.0")
 
 origins = [
     "http://localhost:5173",
+    "https://astounding-quokka-a79cff.netlify.app"
 ]
 
 app.add_middleware(
