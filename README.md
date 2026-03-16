@@ -134,6 +134,7 @@ Once the containers are running:
 The system automatically creates an admin account on the first run.
 
 ```
+ID: 1
 Email: admin@company.com
 Password: admin
 ```
